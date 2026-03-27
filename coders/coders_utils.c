@@ -6,7 +6,7 @@
 /*   By: iarrien- <iarrien-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/26 13:39:41 by iarrien-          #+#    #+#             */
-/*   Updated: 2026/03/26 15:41:09 by iarrien-         ###   ########.fr       */
+/*   Updated: 2026/03/27 15:10:51 by iarrien-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,4 +37,21 @@ void	*ft_calloc(size_t nmemb, size_t size)
 		i++;
 	}
 	return ((void *)result);
+}
+
+void	update_dead(t_flags *flags)
+{
+	pthread_mutex_lock(&flags->dead_mutex);
+	flags->is_dead = 1;
+	pthread_mutex_unlock(&flags->dead_mutex);
+}
+
+int	check_dead(t_coder *coder)
+{
+	int	result;
+
+	pthread_mutex_lock(&coder->flags->dead_mutex);
+	result = coder->flags->is_dead;
+	pthread_mutex_unlock(&coder->flags->dead_mutex);
+	return (result);
 }

@@ -6,7 +6,7 @@
 /*   By: iarrien- <iarrien-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/24 16:02:53 by iarrien-          #+#    #+#             */
-/*   Updated: 2026/03/26 17:10:01 by iarrien-         ###   ########.fr       */
+/*   Updated: 2026/03/27 15:46:34 by iarrien-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,8 @@ typedef struct s_flags
 	t_scheduler		scheduler;
 	t_queue			*queue;
 	pthread_mutex_t	print_mutex;
-	pthread_cond_t	finish_cond;
+	pthread_mutex_t dead_mutex;
+	int				is_dead;
 }					t_flags;
 
 typedef struct s_dongle
@@ -68,13 +69,17 @@ typedef struct s_coder
 
 void				*coders_loop(void *coder);
 void				initialize_threads(t_coder **coders, t_flags *flags);
-long long			calculate_time(long long time_to_calc);
 void				print_action(int number, long long start_time, char *src);
-void				take_dongle(t_coder *coder);
+void				take_dongle(t_coder *coder, pthread_mutex_t *mutex);
 void				compile(t_coder *coder);
 void				debug(t_coder *coder);
 void				refactor(t_coder *coder);
+
+long long			calculate_time(long long time_to_calc);
+void				finish_cond_loop(t_coder *coder);
 void				*ft_calloc(size_t nmemb, size_t size);
+int					check_dead(t_coder *coder);
+void				update_dead(t_flags *flags);
 
 void				free_coder_from_queue(t_coder *coder);
 void				fifo_queue(t_coder *coder);

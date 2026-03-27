@@ -6,7 +6,7 @@
 /*   By: iarrien- <iarrien-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/26 14:27:01 by iarrien-          #+#    #+#             */
-/*   Updated: 2026/03/26 15:59:40 by iarrien-         ###   ########.fr       */
+/*   Updated: 2026/03/27 15:43:59 by iarrien-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,6 @@ int	check_coder_index(int *coders, int actual_coder_number, int size)
 	int	i;
 
 	i = 0;
-	usleep(500);
 	while (i < size)
 	{
 		if (coders[i] == actual_coder_number)

@@ -6,7 +6,7 @@
 /*   By: iarrien- <iarrien-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/24 16:02:07 by iarrien-          #+#    #+#             */
-/*   Updated: 2026/03/26 17:15:44 by iarrien-         ###   ########.fr       */
+/*   Updated: 2026/03/27 15:02:31 by iarrien-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,7 +105,7 @@ int	main(int argc, char *argv[])
 
 	flags = (t_flags *)ft_calloc(sizeof(t_flags), 1);
 	pthread_mutex_init(&flags->print_mutex, NULL);
-	pthread_cond_init(&flags->finish_cond, NULL);
+	pthread_mutex_init(&flags->dead_mutex, NULL);
 	if (argc != 9)
 		return (printf("Incorrect number of parameters\n"), free(flags), 1);
 	i = 1;
