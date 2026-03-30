@@ -11,12 +11,12 @@
             "program": "${workspaceFolder}/codexion",
             "args": [
                 "4",
-                "100",
+                "400",
                 "200",
-                "300",
+                "400",
                 "400",
                 "5",
-                "200",
+                "1200",
                 "fifo"
             ],
             "stopAtEntry": false,

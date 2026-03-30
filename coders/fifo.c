@@ -6,25 +6,11 @@
 /*   By: iarrien- <iarrien-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/26 14:27:01 by iarrien-          #+#    #+#             */
-/*   Updated: 2026/03/27 15:43:59 by iarrien-         ###   ########.fr       */
+/*   Updated: 2026/03/30 17:02:37 by iarrien-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "coders.h"
-
-int	check_coder_index(int *coders, int actual_coder_number, int size)
-{
-	int	i;
-
-	i = 0;
-	while (i < size)
-	{
-		if (coders[i] == actual_coder_number)
-			return (i);
-		i++;
-	}
-	return (i);
-}
 
 void	free_coder_from_queue(t_coder *coder)
 {
@@ -64,7 +50,7 @@ void	wait_till_cooldown(t_coder *coder)
 }
 
 // A value 0 for the dongle of the array free_dongles means that the dongle is ready to use
-void	fifo_queue(t_coder *coder)
+int	fifo_queue(t_coder *coder)
 {
 	int		i;
 	t_queue	*queue;
@@ -80,14 +66,19 @@ void	fifo_queue(t_coder *coder)
 		}
 		i++;
 	}
-	while (i != 0 || queue->free_dongles[coder->right->id] != 0
-		|| queue->free_dongles[coder->left->id] != 0)
+	while ((queue->free_dongles[coder->right->id] != 0
+			|| queue->free_dongles[coder->left->id] != 0))
 	{
 		pthread_cond_wait(&queue->cond, &queue->mutex);
-		i = check_coder_index(queue->coders, coder->number,
-				coder->flags->number_of_coders);
+		if (check_dead(coder))
+			return (pthread_mutex_unlock(&queue->mutex),
+				pthread_cond_broadcast(&queue->cond), 1);
 	}
 	wait_till_cooldown(coder);
+	if (check_dead(coder))
+		return (pthread_mutex_unlock(&queue->mutex), 1);
 	queue->free_dongles[coder->left->id] = 1;
 	queue->free_dongles[coder->right->id] = 1;
+	pthread_mutex_unlock(&queue->mutex);
+	return (0);
 }

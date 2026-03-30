@@ -6,7 +6,7 @@
 /*   By: iarrien- <iarrien-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/24 16:02:07 by iarrien-          #+#    #+#             */
-/*   Updated: 2026/03/27 15:02:31 by iarrien-         ###   ########.fr       */
+/*   Updated: 2026/03/30 16:16:26 by iarrien-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,13 @@ int	fill_flags(int i, char *argv[], t_flags *flags)
 	return (0);
 }
 
+void	free_queue(t_queue *queue)
+{
+	free(queue->coders);
+	free(queue->free_dongles);
+	free(queue);
+}
+
 void	ft_free_cods_and_dongs(t_dongle **dongles, t_coder **coders, t_flags *flags)
 {
 	int	i;
@@ -53,15 +60,24 @@ void	ft_free_cods_and_dongs(t_dongle **dongles, t_coder **coders, t_flags *flags
 	}
 	free(dongles);
 	free(coders);
+	free_queue(flags->queue);
+	free(flags);
 }
 
 void	create_queue(t_flags *flags)
 {
+	int	dongle_number;
+
+	dongle_number = flags->number_of_coders;
+	if (flags->number_of_coders == 1)
+		dongle_number++;
 	flags->queue = (t_queue *)ft_calloc(sizeof(t_queue), 1);
 	flags->queue->coders = (int *)ft_calloc(sizeof(int),
 			flags->number_of_coders);
 	flags->queue->free_dongles = (int *)ft_calloc(sizeof(int),
-			flags->number_of_coders);
+			dongle_number);
+	if (flags->number_of_coders == 1)
+		flags->queue->free_dongles[0] = 1;
 	pthread_cond_init(&flags->queue->cond, NULL);
 	pthread_mutex_init(&flags->queue->mutex, NULL);
 }

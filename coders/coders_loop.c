@@ -6,7 +6,7 @@
 /*   By: iarrien- <iarrien-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/25 12:21:58 by iarrien-          #+#    #+#             */
-/*   Updated: 2026/03/27 15:57:00 by iarrien-         ###   ########.fr       */
+/*   Updated: 2026/03/30 16:41:33 by iarrien-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,14 +52,12 @@ void	*monitor_loop(void *coders_pointer)
 		if (get_out == coders[i]->flags->number_of_coders)
 		{
 			update_dead(coders[i]->flags);
-			usleep(5000);
 			printf("%lld Finished\n", calculate_time(coders[i]->flags->start_time));
 			break ;
 		}
 		else if (get_out == -1)
 		{
 			update_dead(coders[i]->flags);
-			usleep(5000);
 			print_action(coders[i]->number,
 				coders[i]->flags->start_time, "burned out");
 			break ;
@@ -70,32 +68,21 @@ void	*monitor_loop(void *coders_pointer)
 
 void	*coders_loop(void *coder_pointer)
 {
-	t_coder	*coder;
+	t_coder		*coder;
+	t_functions	functions[4];
+	int			i;
 
 	coder = (t_coder *)coder_pointer;
-	while (1)
+	functions[0] = fifo_queue;
+	functions[1] = take_and_compile;
+	functions[2] = debug;
+	functions[3] = refactor;
+	i = 0;
+	while (!check_dead(coder))
 	{
-		fifo_queue(coder);
-		if (check_dead(coder))
-			return (NULL);
-		pthread_mutex_lock(&coder->flags->print_mutex);
-		take_dongle(coder, &coder->right->mutex);
-		take_dongle(coder, &coder->left->mutex);
-		if (check_dead(coder))
-			return (pthread_mutex_unlock(&coder->right->mutex),
-				pthread_mutex_unlock(&coder->left->mutex), NULL);
-		compile(coder);
-		pthread_mutex_unlock(&coder->right->mutex);
-		pthread_mutex_unlock(&coder->left->mutex);
-		if (check_dead(coder))
-			return (NULL);
-		free_coder_from_queue(coder);
-		if (check_dead(coder))
-			return (NULL);
-		debug(coder);
-		if (check_dead(coder))
-			return (NULL);
-		refactor(coder);
+		if (functions[i % 4](coder))
+			break ;
+		i++;
 	}
 	return (NULL);
 }
