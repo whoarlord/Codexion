@@ -6,11 +6,48 @@
 /*   By: iarrien- <iarrien-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/26 14:27:01 by iarrien-          #+#    #+#             */
-/*   Updated: 2026/03/31 11:32:24 by iarrien-         ###   ########.fr       */
+/*   Updated: 2026/03/31 15:29:38 by iarrien-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "coders.h"
+
+// static int check_aux(int *coders, int *free_dongles, t_coder *coder, int i)
+// {
+// 	return (free_dongles[coders[i] - 1] == 1
+// 		&& (coders[i] - 1 == coder->left->id
+// 			|| coders[i] - 1 == coder->right->id));
+
+// }
+
+static int	check_before_coders(int *coders, int *free_dongles, t_coder *coder)
+{
+	int	i;
+	int	n;
+
+	i = 0;
+	n = coder->flags->number_of_coders;
+	while (i < n)
+	{
+		if (coders[i] == coder->number)
+			break ;
+		else if ((free_dongles[coders[i] - 1] == 1
+				&& (coders[i] - 1 == coder->left->id
+					|| coders[i] - 1 == coder->right->id))
+			|| ((free_dongles[coders[i] % n] == 1)
+				&& (coders[i] % n == coder->left->id
+					|| coders[i] % n == coder->right->id))
+			|| ((free_dongles[coders[i] - 1] == 0
+					&& (coders[i] - 1 != coder->left->id
+						&& coders[i] - 1 != coder->right->id))
+				&& ((free_dongles[coders[i] % n] == 0)
+					&& (coders[i] % n != coder->left->id
+						&& coders[i] % n != coder->right->id))))
+			return (1);
+		i++;
+	}
+	return (0);
+}
 
 static int	check_coder_index(int *coders, int actual_coder_number, int size)
 {
@@ -32,9 +69,10 @@ void	free_coder_from_queue(t_coder *coder)
 	int		temp;
 	t_queue	*queue;
 
-	i = 0;
 	temp = 0;
 	queue = coder->flags->queue;
+	i = check_coder_index(queue->coders, coder->number,
+			coder->flags->number_of_coders);
 	queue->free_dongles[coder->right->id] = 0;
 	queue->free_dongles[coder->left->id] = 0;
 	while (i < coder->flags->number_of_coders - 1)
@@ -63,6 +101,20 @@ void	wait_till_cooldown(t_coder *coder)
 		;
 }
 
+void print_queue(int *coders, int size)
+{
+	int i;
+
+	i = 0;
+	printf("[");
+	while (i < size)
+	{
+		printf("%d, ", coders[i]);
+		i++;
+	}
+	printf("]\n");
+}
+
 // A value 0 for the dongle of the array free_
 // dongles means that the dongle is ready to use
 int	fifo_queue(t_coder *coder)
@@ -72,7 +124,7 @@ int	fifo_queue(t_coder *coder)
 
 	i = 0;
 	queue = coder->flags->queue;
-	usleep(coder->number * 10);
+	usleep(coder->number * 1000);
 	while (i < coder->flags->number_of_coders)
 	{
 		if (queue->coders[i] == 0)
@@ -83,21 +135,21 @@ int	fifo_queue(t_coder *coder)
 		i++;
 	}
 	pthread_mutex_lock(&queue->mutex);
-	while ((i != 0 || queue->free_dongles[coder->right->id] != 0
+	while ((check_before_coders(queue->coders, queue->free_dongles, coder)
+			|| queue->free_dongles[coder->right->id] != 0
 			|| queue->free_dongles[coder->left->id] != 0))
 	{
-		pthread_cond_wait(&queue->cond, &queue->mutex);
 		if (check_dead(coder))
 			return (pthread_mutex_unlock(&queue->mutex),
 				pthread_cond_broadcast(&queue->cond), 1);
-		i = check_coder_index(queue->coders, coder->number,
-				coder->flags->number_of_coders);
+		pthread_cond_wait(&queue->cond, &queue->mutex);
 	}
+	print_queue(queue->coders, coder->flags->number_of_coders);
+	queue->free_dongles[coder->left->id] = 1;
+	queue->free_dongles[coder->right->id] = 1;
 	wait_till_cooldown(coder);
 	if (check_dead(coder))
 		return (pthread_mutex_unlock(&queue->mutex), 1);
-	queue->free_dongles[coder->left->id] = 1;
-	queue->free_dongles[coder->right->id] = 1;
 	pthread_mutex_unlock(&queue->mutex);
 	return (0);
 }

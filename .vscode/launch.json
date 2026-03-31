@@ -10,13 +10,13 @@
             "request": "launch",
             "program": "${workspaceFolder}/codexion",
             "args": [
-                "4",
-                "400",
+                "3",
+                "1200",
                 "200",
                 "400",
                 "400",
                 "5",
-                "1",
+                "1200",
                 "fifo"
             ],
             "stopAtEntry": false,

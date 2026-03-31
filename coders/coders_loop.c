@@ -6,7 +6,7 @@
 /*   By: iarrien- <iarrien-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/25 12:21:58 by iarrien-          #+#    #+#             */
-/*   Updated: 2026/03/30 17:56:48 by iarrien-         ###   ########.fr       */
+/*   Updated: 2026/03/31 14:07:32 by iarrien-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,21 @@ int	monitor_verifications(t_coder **coders, int get_out, int *i)
 }
 
 
+static void	finish_state(t_coder *coder, char *str)
+{
+	t_flags	*flags;
+
+	flags = coder->flags;
+	update_dead(flags);
+	pthread_mutex_lock(&flags->print_mutex);
+	if (!strcmp(str, "burned out"))
+		print_action(coder->number, flags->start_time, str);
+	else
+		printf("%lld %s\n", calculate_time(flags->start_time), str);
+	pthread_mutex_unlock(&flags->print_mutex);
+}
+
+
 void	*monitor_loop(void *coders_pointer)
 {
 	t_coder	**coders;
@@ -51,19 +66,12 @@ void	*monitor_loop(void *coders_pointer)
 		get_out = monitor_verifications(coders, get_out, &i);
 		if (get_out == coders[i]->flags->number_of_coders)
 		{
-			update_dead(coders[i]->flags);
-			pthread_mutex_lock(&coders[0]->flags->print_mutex);
-			printf("%lld Finished\n", calculate_time(coders[i]->flags->start_time));
-			pthread_mutex_unlock(&coders[0]->flags->print_mutex);
+			finish_state(coders[i], "Finished");
 			break ;
 		}
 		else if (get_out == -1)
 		{
-			update_dead(coders[i]->flags);
-			pthread_mutex_lock(&coders[0]->flags->print_mutex);
-			print_action(coders[i]->number,
-				coders[i]->flags->start_time, "burned out");
-			pthread_mutex_unlock(&coders[0]->flags->print_mutex);
+			finish_state(coders[i], "burned out");
 			break ;
 		}
 	}
