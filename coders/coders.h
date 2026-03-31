@@ -6,7 +6,7 @@
 /*   By: iarrien- <iarrien-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/24 16:02:53 by iarrien-          #+#    #+#             */
-/*   Updated: 2026/03/30 16:34:47 by iarrien-         ###   ########.fr       */
+/*   Updated: 2026/03/31 16:33:54 by iarrien-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,6 +82,8 @@ void				*ft_calloc(size_t nmemb, size_t size);
 int					check_dead(t_coder *coder);
 void				update_dead(t_flags *flags);
 
-void				free_coder_from_queue(t_coder *coder);
+void				update_coders_queue(t_coder *coder);
 int					fifo_queue(t_coder *coder);
+int					check_before_coders(int *coders,
+						int *free_dongles, t_coder *coder);
 #endif

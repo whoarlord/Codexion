@@ -6,7 +6,7 @@
 /*   By: iarrien- <iarrien-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/25 16:17:00 by iarrien-          #+#    #+#             */
-/*   Updated: 2026/03/30 16:40:51 by iarrien-         ###   ########.fr       */
+/*   Updated: 2026/03/31 16:33:44 by iarrien-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ int	take_and_compile(t_coder *coder)
 	if (check_dead(coder))
 		return (pthread_mutex_unlock(&coder->right->mutex),
 			pthread_mutex_unlock(&coder->left->mutex),
-			free_coder_from_queue(coder), 1);
+			update_coders_queue(coder), 1);
 	usleep(coder->flags->time_to_compile * 1000);
 	coder->last_compile = calculate_time(coder->flags->start_time);
 	coder->right->last_use = calculate_time(coder->flags->start_time);
@@ -38,7 +38,7 @@ int	take_and_compile(t_coder *coder)
 	coder->compile_count++;
 	pthread_mutex_unlock(&coder->right->mutex);
 	pthread_mutex_unlock(&coder->left->mutex);
-	free_coder_from_queue(coder);
+	update_coders_queue(coder);
 	return (0);
 }
 
