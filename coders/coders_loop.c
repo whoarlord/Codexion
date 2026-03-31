@@ -6,7 +6,7 @@
 /*   By: iarrien- <iarrien-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/25 12:21:58 by iarrien-          #+#    #+#             */
-/*   Updated: 2026/03/30 16:41:33 by iarrien-         ###   ########.fr       */
+/*   Updated: 2026/03/30 17:56:48 by iarrien-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,14 +52,18 @@ void	*monitor_loop(void *coders_pointer)
 		if (get_out == coders[i]->flags->number_of_coders)
 		{
 			update_dead(coders[i]->flags);
+			pthread_mutex_lock(&coders[0]->flags->print_mutex);
 			printf("%lld Finished\n", calculate_time(coders[i]->flags->start_time));
+			pthread_mutex_unlock(&coders[0]->flags->print_mutex);
 			break ;
 		}
 		else if (get_out == -1)
 		{
 			update_dead(coders[i]->flags);
+			pthread_mutex_lock(&coders[0]->flags->print_mutex);
 			print_action(coders[i]->number,
 				coders[i]->flags->start_time, "burned out");
+			pthread_mutex_unlock(&coders[0]->flags->print_mutex);
 			break ;
 		}
 	}
