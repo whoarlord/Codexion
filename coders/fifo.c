@@ -6,7 +6,7 @@
 /*   By: iarrien- <iarrien-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/26 14:27:01 by iarrien-          #+#    #+#             */
-/*   Updated: 2026/03/31 16:41:44 by iarrien-         ###   ########.fr       */
+/*   Updated: 2026/03/31 18:58:42 by iarrien-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,6 +90,21 @@ void	update_queue(t_coder *coder, t_queue *queue)
 }
 
 
+// void	print_array(int *array, int size)
+// {
+// 	int i;
+
+// 	i = 0;
+// 	printf("[");
+// 	while (i < size - 1)
+// 	{
+// 		printf("%d, ", array[i]);
+// 		i++;
+// 	}
+// 	printf("%d]\n", array[i]);
+// }
+
+
 // A value 0 for the dongle of the array free_
 // dongles means that the dongle is ready to use
 int	fifo_queue(t_coder *coder)
@@ -108,10 +123,11 @@ int	fifo_queue(t_coder *coder)
 				pthread_cond_broadcast(&queue->cond), 1);
 		pthread_cond_wait(&queue->cond, &queue->mutex);
 	}
+	print_array(queue->coders, coder->flags->number_of_coders);
 	queue->free_dongles[coder->left->id] = 1;
 	queue->free_dongles[coder->right->id] = 1;
-	pthread_mutex_unlock(&queue->mutex);
 	free_coder_from_queue(coder);
+	pthread_mutex_unlock(&queue->mutex);
 	pthread_cond_broadcast(&queue->cond);
 	wait_till_cooldown(coder);
 	if (check_dead(coder))

@@ -6,7 +6,7 @@
 /*   By: iarrien- <iarrien-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/24 16:02:07 by iarrien-          #+#    #+#             */
-/*   Updated: 2026/03/30 17:58:45 by iarrien-         ###   ########.fr       */
+/*   Updated: 2026/03/31 17:12:58 by iarrien-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -138,4 +138,5 @@ int	main(int argc, char *argv[])
 	create_cods_and_dongs(dongles, coders, flags);
 	initialize_threads(coders, flags);
 	ft_free_cods_and_dongs(dongles, coders, flags);
+	return (0);
 }
