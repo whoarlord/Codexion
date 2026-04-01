@@ -6,7 +6,7 @@
 /*   By: iarrien- <iarrien-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/24 16:02:07 by iarrien-          #+#    #+#             */
-/*   Updated: 2026/03/31 17:12:58 by iarrien-         ###   ########.fr       */
+/*   Updated: 2026/04/01 11:15:34 by iarrien-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,7 @@ void	free_queue(t_queue *queue)
 {
 	free(queue->coders);
 	free(queue->free_dongles);
+	free(queue->last_compile_array);
 	free(queue);
 }
 
@@ -73,6 +74,8 @@ void	create_queue(t_flags *flags)
 		dongle_number++;
 	flags->queue = (t_queue *)ft_calloc(sizeof(t_queue), 1);
 	flags->queue->coders = (int *)ft_calloc(sizeof(int),
+			flags->number_of_coders);
+	flags->queue->last_compile_array = (int *)ft_calloc(sizeof(int),
 			flags->number_of_coders);
 	flags->queue->free_dongles = (int *)ft_calloc(sizeof(int),
 			dongle_number);

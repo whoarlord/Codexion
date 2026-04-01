@@ -6,7 +6,7 @@
 /*   By: iarrien- <iarrien-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/26 14:27:01 by iarrien-          #+#    #+#             */
-/*   Updated: 2026/03/31 18:58:42 by iarrien-         ###   ########.fr       */
+/*   Updated: 2026/04/01 11:03:51 by iarrien-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,7 +73,7 @@ void	wait_till_cooldown(t_coder *coder)
 }
 
 
-void	update_queue(t_coder *coder, t_queue *queue)
+void	update_queue_fifo(t_coder *coder, t_queue *queue)
 {
 	int	i;
 
@@ -113,7 +113,7 @@ int	fifo_queue(t_coder *coder)
 
 	queue = coder->flags->queue;
 	pthread_mutex_lock(&queue->mutex);
-	update_queue(coder, queue);
+	update_queue_fifo(coder, queue);
 	while ((check_before_coders(queue->coders, queue->free_dongles, coder)
 			|| queue->free_dongles[coder->right->id] != 0
 			|| queue->free_dongles[coder->left->id] != 0))

@@ -6,7 +6,7 @@
 /*   By: iarrien- <iarrien-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/24 16:02:53 by iarrien-          #+#    #+#             */
-/*   Updated: 2026/03/31 16:33:54 by iarrien-         ###   ########.fr       */
+/*   Updated: 2026/04/01 11:15:40 by iarrien-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,7 @@ typedef enum e_scheduler
 typedef struct s_queue
 {
 	int				*coders;
+	int				*last_compile_array;
 	int				*free_dongles;
 	pthread_mutex_t	mutex;
 	pthread_cond_t	cond;
