@@ -6,7 +6,7 @@
 /*   By: iarrien- <iarrien-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/26 13:39:41 by iarrien-          #+#    #+#             */
-/*   Updated: 2026/03/27 15:10:51 by iarrien-         ###   ########.fr       */
+/*   Updated: 2026/04/01 12:12:49 by iarrien-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,4 +54,19 @@ int	check_dead(t_coder *coder)
 	result = coder->flags->is_dead;
 	pthread_mutex_unlock(&coder->flags->dead_mutex);
 	return (result);
+}
+
+void	wait_till_cooldown(t_coder *coder)
+{
+	if (coder->left->last_use == 0)
+		coder->left->last_use -= coder->flags->dongle_cooldown;
+	if (coder->right->last_use == 0)
+		coder->right->last_use -= coder->flags->dongle_cooldown;
+	while (coder->left->last_use
+		+ coder->flags->dongle_cooldown
+		>= calculate_time(coder->flags->start_time)
+		|| coder->right->last_use
+		+ coder->flags->dongle_cooldown
+		>= calculate_time(coder->flags->start_time))
+		;
 }

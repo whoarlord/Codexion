@@ -6,7 +6,7 @@
 /*   By: iarrien- <iarrien-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/25 12:21:58 by iarrien-          #+#    #+#             */
-/*   Updated: 2026/03/31 14:07:32 by iarrien-         ###   ########.fr       */
+/*   Updated: 2026/04/01 11:53:31 by iarrien-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,6 +86,8 @@ void	*coders_loop(void *coder_pointer)
 
 	coder = (t_coder *)coder_pointer;
 	functions[0] = fifo_queue;
+	if (coder->flags->scheduler == edf)
+		functions[0] = edf_queue;
 	functions[1] = take_and_compile;
 	functions[2] = debug;
 	functions[3] = refactor;

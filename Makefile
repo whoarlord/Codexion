@@ -6,7 +6,7 @@
 #    By: iarrien- <iarrien-@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/03/24 15:58:01 by iarrien-          #+#    #+#              #
-#    Updated: 2026/03/31 17:15:08 by iarrien-         ###   ########.fr        #
+#    Updated: 2026/04/01 11:53:53 by iarrien-         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,7 +14,7 @@ NAME=codexion
 CC=cc
 CFLAGS=-Wall -Werror -Wextra -pthread -g3 -fsanitize=address
 
-SRC=main.c coders_loop.c coders_actions.c coders_utils.c fifo.c check_before.c
+SRC=main.c coders_loop.c coders_actions.c coders_utils.c fifo.c check_before.c queue_utils.c edf.c
 SDIR=coders
 HEADER=coders.h
 OBJ=$(SRC:.c=.o)

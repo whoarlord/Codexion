@@ -6,7 +6,7 @@
 /*   By: iarrien- <iarrien-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/31 16:07:28 by iarrien-          #+#    #+#             */
-/*   Updated: 2026/03/31 18:56:35 by iarrien-         ###   ########.fr       */
+/*   Updated: 2026/04/01 12:06:49 by iarrien-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,3 +46,4 @@ int	check_before_coders(int *coders, int *free_dongles, t_coder *coder)
 	}
 	return (0);
 }
+
