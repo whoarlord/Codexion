@@ -6,7 +6,7 @@
 /*   By: iarrien- <iarrien-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/24 16:02:53 by iarrien-          #+#    #+#             */
-/*   Updated: 2026/04/01 12:13:05 by iarrien-         ###   ########.fr       */
+/*   Updated: 2026/07/14 18:30:41 by iarrien-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,9 +26,9 @@ typedef enum e_scheduler
 }					t_scheduler;
 typedef struct s_queue
 {
-	int				*coders;
-	int				*edf_priority_array;
-	int				*free_dongles;
+	int				coders[2];
+	int				edf_min_value;
+	int				is_free;
 	pthread_mutex_t	mutex;
 	pthread_cond_t	cond;
 }					t_queue;
@@ -44,7 +44,6 @@ typedef struct s_flags
 	int				dongle_cooldown;
 	long long		start_time;
 	t_scheduler		scheduler;
-	t_queue			*queue;
 	pthread_mutex_t	print_mutex;
 	pthread_mutex_t	dead_mutex;
 	int				is_dead;
@@ -52,6 +51,7 @@ typedef struct s_flags
 
 typedef struct s_dongle
 {
+	t_queue			*queue;
 	pthread_mutex_t	mutex;
 	int				id;
 	long long		last_use;

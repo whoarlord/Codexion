@@ -6,14 +6,14 @@
 /*   By: iarrien- <iarrien-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/25 12:21:58 by iarrien-          #+#    #+#             */
-/*   Updated: 2026/04/01 11:53:31 by iarrien-         ###   ########.fr       */
+/*   Updated: 2026/07/14 18:25:46 by iarrien-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "coders.h"
 
 
-int	monitor_verifications(t_coder **coders, int get_out, int *i)
+int	monitor_verifications(t_coder **coders, int mal, int *i)
 {
 	t_flags	*flags;
 
@@ -22,18 +22,18 @@ int	monitor_verifications(t_coder **coders, int get_out, int *i)
 	{
 		if (coders[*i]->compile_count
 			>= flags->number_of_compiles_required)
-			get_out++;
+			mal++;
 		if (flags->time_to_burnout + coders[*i]->last_compile
 			<= calculate_time(flags->start_time))
 		{
-			get_out = -1;
+			mal = -1;
 			break ;
 		}
 		*i = *i + 1;
 	}
 	if (*i == flags->number_of_coders)
 		*i = *i - 1;
-	return (get_out);
+	return (mal);
 }
 
 
@@ -56,20 +56,20 @@ void	*monitor_loop(void *coders_pointer)
 {
 	t_coder	**coders;
 	int		i;
-	int		get_out;
+	int		mal;
 
 	coders = (t_coder **)coders_pointer;
 	while (1)
 	{
-		get_out = 0;
+		mal = 0;
 		i = 0;
-		get_out = monitor_verifications(coders, get_out, &i);
-		if (get_out == coders[i]->flags->number_of_coders)
+		mal = monitor_verifications(coders, mal, &i);
+		if (mal == coders[i]->flags->number_of_coders)
 		{
 			finish_state(coders[i], "Finished");
 			break ;
 		}
-		else if (get_out == -1)
+		else if (mal == -1)
 		{
 			finish_state(coders[i], "burned out");
 			break ;
@@ -114,10 +114,11 @@ void	initialize_threads(t_coder **coders, t_flags *flags)
 		i++;
 	}
 	pthread_join(monitor, NULL);
-	pthread_cond_broadcast(&flags->queue->cond);
 	i = 0;
 	while (i < flags->number_of_coders)
 	{
+		pthread_cond_broadcast(&coders[i]->left->queue->cond);
+		pthread_cond_broadcast(&coders[i]->right->queue->cond);
 		pthread_join(coders[i]->thread, NULL);
 		i++;
 	}
