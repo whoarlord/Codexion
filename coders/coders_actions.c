@@ -6,7 +6,7 @@
 /*   By: iarrien- <iarrien-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/25 16:17:00 by iarrien-          #+#    #+#             */
-/*   Updated: 2026/07/14 18:10:24 by iarrien-         ###   ########.fr       */
+/*   Updated: 2026/07/16 18:00:45 by iarrien-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,9 @@ int	take_and_compile(t_coder *coder)
 		return (pthread_mutex_unlock(&coder->right->mutex),
 			pthread_mutex_unlock(&coder->left->mutex),
 			update_coders_queue(coder), 1);
-	usleep(coder->flags->time_to_compile * 1000);
+	coder->next_event_time = calculate_time(coder->flags->start_time) + (long long) (coder->flags->time_to_compile);
+	while (coder->next_event_time > calculate_time(coder->flags->start_time))
+		usleep(100);
 	coder->right->last_use = calculate_time(coder->flags->start_time);
 	coder->left->last_use = calculate_time(coder->flags->start_time);
 	coder->compile_count++;
@@ -48,7 +50,9 @@ int	debug(t_coder *coder)
 	pthread_mutex_unlock(&coder->flags->print_mutex);
 	if (check_dead(coder))
 		return (1);
-	usleep(coder->flags->time_to_debug * 1000);
+	coder->next_event_time += (long long) (coder->flags->time_to_debug);
+	while (coder->next_event_time > calculate_time(coder->flags->start_time))
+		usleep(100);
 	return (0);
 }
 
@@ -59,6 +63,8 @@ int	refactor(t_coder *coder)
 	pthread_mutex_unlock(&coder->flags->print_mutex);
 	if (check_dead(coder))
 		return (1);
-	usleep(coder->flags->time_to_refactor * 1000);
+	coder->next_event_time += (long long) (coder->flags->time_to_refactor);
+	while (coder->next_event_time > calculate_time(coder->flags->start_time))
+		usleep(100);
 	return (0);
 }

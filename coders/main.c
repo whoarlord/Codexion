@@ -6,7 +6,7 @@
 /*   By: iarrien- <iarrien-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/24 16:02:07 by iarrien-          #+#    #+#             */
-/*   Updated: 2026/07/14 18:23:32 by iarrien-         ###   ########.fr       */
+/*   Updated: 2026/07/16 16:16:08 by iarrien-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,7 @@ void	create_queue(t_dongle *dongle, int number_of_coders)
 {
 	dongle->queue = (t_queue *)ft_calloc(sizeof(t_queue), 1);
 	if (number_of_coders == 1)
-		dongle->queue->is_free = 1;
+		dongle->queue->is_busy = 1;
 	pthread_cond_init(&dongle->queue->cond, NULL);
 	pthread_mutex_init(&dongle->queue->mutex, NULL);
 }
@@ -109,7 +109,6 @@ int	main(int argc, char *argv[])
 	t_dongle	**dongles;
 	t_coder		**coders;
 
-	printf("start");
 	flags = (t_flags *)ft_calloc(sizeof(t_flags), 1);
 	pthread_mutex_init(&flags->print_mutex, NULL);
 	pthread_mutex_init(&flags->dead_mutex, NULL);

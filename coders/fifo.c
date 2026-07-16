@@ -6,7 +6,7 @@
 /*   By: iarrien- <iarrien-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/26 14:27:01 by iarrien-          #+#    #+#             */
-/*   Updated: 2026/04/01 12:12:40 by iarrien-         ###   ########.fr       */
+/*   Updated: 2026/07/15 16:58:42 by iarrien-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,10 +15,10 @@
 
 void	update_queue_fifo(t_coder *coder, t_queue *queue)
 {
-	int	i;
+	int			i;
 
 	i = 0;
-	while (i < coder->flags->number_of_coders)
+	while (i < 2)
 	{
 		if (queue->coders[i] == 0)
 		{
@@ -34,25 +34,29 @@ void	update_queue_fifo(t_coder *coder, t_queue *queue)
 // dongles means that the dongle is ready to use
 int	fifo_queue(t_coder *coder)
 {
-	t_queue	*queue;
+	t_queue	*right_queue;
+	t_queue	*left_queue;
 
-	queue = coder->flags->queue;
-	pthread_mutex_lock(&queue->mutex);
-	update_queue_fifo(coder, queue);
-	while ((check_before_coders(queue->coders, queue->free_dongles, coder)
-			|| queue->free_dongles[coder->right->id] != 0
-			|| queue->free_dongles[coder->left->id] != 0))
-	{
+	right_queue = coder->right->queue;
+	left_queue = coder->left->queue;
+	while (right_queue->coders[0] != coder->number
+		&& left_queue->coders[0] != coder->number) {
+		pthread_mutex_lock(&right_queue->mutex);
+		update_queue_fifo(coder, right_queue);
+		pthread_mutex_unlock(&right_queue->mutex);
 		if (check_dead(coder))
-			return (pthread_mutex_unlock(&queue->mutex),
-				pthread_cond_broadcast(&queue->cond), 1);
-		pthread_cond_wait(&queue->cond, &queue->mutex);
+			return (pthread_mutex_unlock(&right_queue->mutex),
+				pthread_cond_broadcast(&right_queue->cond), 1);
+		pthread_cond_wait(&right_queue->cond, &right_queue->mutex);
+
+		pthread_mutex_lock(&left_queue->mutex);
+		update_queue_fifo(coder, left_queue);
+		pthread_mutex_unlock(&left_queue->mutex);
+		if (check_dead(coder))
+			return (pthread_mutex_unlock(&left_queue->mutex),
+				pthread_cond_broadcast(&left_queue->cond), 1);
+		pthread_cond_wait(&left_queue->cond, &left_queue->mutex);
 	}
-	queue->free_dongles[coder->left->id] = 1;
-	queue->free_dongles[coder->right->id] = 1;
-	free_coder_from_queue(coder);
-	pthread_mutex_unlock(&queue->mutex);
-	pthread_cond_broadcast(&queue->cond);
 	wait_till_cooldown(coder);
 	if (check_dead(coder))
 		return (1);

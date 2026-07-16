@@ -6,7 +6,7 @@
 /*   By: iarrien- <iarrien-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/24 16:02:53 by iarrien-          #+#    #+#             */
-/*   Updated: 2026/07/14 18:30:41 by iarrien-         ###   ########.fr       */
+/*   Updated: 2026/07/16 17:57:10 by iarrien-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,8 +27,8 @@ typedef enum e_scheduler
 typedef struct s_queue
 {
 	int				coders[2];
-	int				edf_min_value;
-	int				is_free;
+	int				edf_priority_array[2];
+	int				is_busy;
 	pthread_mutex_t	mutex;
 	pthread_cond_t	cond;
 }					t_queue;
@@ -62,6 +62,7 @@ typedef struct s_coder
 	int				number;
 	int				last_compile;
 	int				compile_count;
+	int				next_event_time;
 	t_dongle		*left;
 	t_dongle		*right;
 	pthread_t		thread;
@@ -84,7 +85,6 @@ void				wait_till_cooldown(t_coder *coder);
 int					check_dead(t_coder *coder);
 void				update_dead(t_flags *flags);
 
-void				update_coders_queue(t_coder *coder);
 int					fifo_queue(t_coder *coder);
 int					check_before_coders(int *coders,
 						int *free_dongles, t_coder *coder);
@@ -92,8 +92,8 @@ int					check_coder_index(int *coders,
 						int actual_coder_number, int size);
 void				free_coder_from_queue(t_coder *coder);
 void				update_coders_queue(t_coder *coder);
-void				shift_left(t_queue *queue, int i, int size);
-void				shift_right(t_queue *queue, int i, int size);
+void				shift_left(t_queue *queue);
+void				shift_right(t_queue *queue);
 
 int					edf_queue(t_coder *coder);
 #endif

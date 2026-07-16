@@ -6,7 +6,7 @@
 /*   By: iarrien- <iarrien-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/01 11:28:13 by iarrien-          #+#    #+#             */
-/*   Updated: 2026/07/14 18:09:56 by iarrien-         ###   ########.fr       */
+/*   Updated: 2026/07/16 17:11:29 by iarrien-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,56 +26,53 @@ int	check_coder_index(int *coders, int actual_coder_number, int size)
 	return (i);
 }
 
-void	shift_left(t_queue *queue, int i, int size)
+void	shift_left(t_queue *queue)
 {
 	int		coders_temp;
 	int		burnout_temp;
 
-	coders_temp = 0;
-	burnout_temp = 0;
-	while (i < size - 1)
-	{
-		coders_temp = queue->coders[i];
-		queue->coders[i] = queue->coders[i + 1];
-		queue->coders[i + 1] = coders_temp;
-		burnout_temp = queue->edf_priority_array[i];
-		queue->edf_priority_array[i] = queue->edf_priority_array[i + 1];
-		queue->edf_priority_array[i + 1] = burnout_temp;
-		i++;
-	}
-	queue->coders[i] = 0;
-	queue->edf_priority_array[i] = 0;
+	coders_temp = queue->coders[0];
+	queue->coders[0] = queue->coders[1];
+	queue->coders[1] = coders_temp;
+	burnout_temp = queue->edf_priority_array[0];
+	queue->edf_priority_array[0] = queue->edf_priority_array[1];
+	queue->edf_priority_array[1] = burnout_temp;
+	queue->coders[1] = 0;
+	queue->edf_priority_array[1] = 0;
 }
 
-void	shift_right(t_queue *queue, int i, int size)
+void	shift_right(t_queue *queue)
 {
-	while (size - 2 >= i)
-	{
-		queue->coders[size - 1] = queue->coders[size - 2];
-		queue->edf_priority_array[size - 1] = queue->edf_priority_array[
-			size - 2];
-		size--;
-	}
-	queue->coders[i] = 0;
-	queue->edf_priority_array[i] = 0;
+	queue->coders[1] = queue->coders[0];
+	queue->edf_priority_array[1] = queue->edf_priority_array[0];
+	queue->coders[0] = 0;
+	queue->edf_priority_array[0] = 0;
 }
 
 void	free_coder_from_queue(t_coder *coder)
 {
-	int		i;
-
-	i = check_coder_index(coder->flags->queue->coders, coder->number,
-			coder->flags->number_of_coders);
-	shift_left(coder->flags->queue, i, coder->flags->number_of_coders);
+	shift_left(coder->left->queue);
+	shift_left(coder->right->queue);
 }
 
 
 void	update_coders_queue(t_coder *coder)
 {
-	t_queue	*queue;
+	t_queue	*right;
+	t_queue	*left;
 
-	queue = coder->flags->queue;
-	queue->free_dongles[coder->right->id] = 0;
-	queue->free_dongles[coder->left->id] = 0;
-	pthread_cond_broadcast(&queue->cond);
+	right = coder->right->queue;
+	left = coder->left->queue;
+
+	pthread_mutex_lock(&right->mutex);
+	shift_left(right);
+	right->is_busy = 0;
+	pthread_cond_broadcast(&right->cond);
+	pthread_mutex_unlock(&right->mutex);
+
+	pthread_mutex_lock(&left->mutex);
+	shift_left(left);
+	left->is_busy = 0;
+	pthread_cond_broadcast(&left->cond);
+	pthread_mutex_unlock(&left->mutex);
 }
