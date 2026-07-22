@@ -6,7 +6,7 @@
 /*   By: iarrien- <iarrien-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/01 11:28:13 by iarrien-          #+#    #+#             */
-/*   Updated: 2026/07/16 17:11:29 by iarrien-         ###   ########.fr       */
+/*   Updated: 2026/07/22 17:15:05 by iarrien-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,21 +58,21 @@ void	free_coder_from_queue(t_coder *coder)
 
 void	update_coders_queue(t_coder *coder)
 {
-	t_queue	*right;
-	t_queue	*left;
+	t_dongle	*right;
+	t_dongle	*left;
 
-	right = coder->right->queue;
-	left = coder->left->queue;
+	right = coder->right;
+	left = coder->left;
 
 	pthread_mutex_lock(&right->mutex);
-	shift_left(right);
-	right->is_busy = 0;
+	shift_left(right->queue);
+	right->queue->is_busy = 0;
 	pthread_cond_broadcast(&right->cond);
 	pthread_mutex_unlock(&right->mutex);
 
 	pthread_mutex_lock(&left->mutex);
-	shift_left(left);
-	left->is_busy = 0;
+	shift_left(left->queue);
+	left->queue->is_busy = 0;
 	pthread_cond_broadcast(&left->cond);
 	pthread_mutex_unlock(&left->mutex);
 }

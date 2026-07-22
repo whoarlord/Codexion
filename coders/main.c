@@ -6,11 +6,12 @@
 /*   By: iarrien- <iarrien-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/24 16:02:07 by iarrien-          #+#    #+#             */
-/*   Updated: 2026/07/16 16:16:08 by iarrien-         ###   ########.fr       */
+/*   Updated: 2026/07/22 17:20:28 by iarrien-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "coders.h"
+#include <sys/resource.h>
 
 int	fill_flags(int i, char *argv[], t_flags *flags)
 {
@@ -40,78 +41,31 @@ int	fill_flags(int i, char *argv[], t_flags *flags)
 	return (0);
 }
 
-void	free_queue(t_queue *queue)
-{
-	free(queue);
-}
-
-void	ft_free_cods_and_dongs(t_dongle **dongles,
-	t_coder **coders, t_flags *flags)
-{
-	int	i;
-
-	i = 0;
-	while (i < flags->number_of_coders)
-	{
-		free(dongles[i]->queue);
-		free(dongles[i]);
-		free(coders[i]);
-		i++;
-	}
-	free(dongles);
-	free(coders);
-	free(flags);
-}
-
-void	create_queue(t_dongle *dongle, int number_of_coders)
-{
-	dongle->queue = (t_queue *)ft_calloc(sizeof(t_queue), 1);
-	if (number_of_coders == 1)
-		dongle->queue->is_busy = 1;
-	pthread_cond_init(&dongle->queue->cond, NULL);
-	pthread_mutex_init(&dongle->queue->mutex, NULL);
-}
-
-void	create_cods_and_dongs(t_dongle **dongles, t_coder **coders,
-		t_flags *flags)
-{
-	int	i;
-
-	i = 0;
-	while (i < flags->number_of_coders)
-	{
-		dongles[i] = (t_dongle *)ft_calloc(sizeof(t_dongle), 1);
-		dongles[i]->id = i;
-		create_queue(dongles[i], flags->number_of_coders);
-		pthread_mutex_init(&dongles[i]->mutex, NULL);
-		i++;
-	}
-	i = 0;
-	while (i < flags->number_of_coders)
-	{
-		coders[i] = (t_coder *)ft_calloc(sizeof(t_coder), 1);
-		coders[i]->number = i + 1;
-		coders[i]->last_compile = 0;
-		coders[i]->left = dongles[i];
-		if (i == flags->number_of_coders - 1)
-			coders[i]->right = dongles[0];
-		else
-			coders[i]->right = dongles[i + 1];
-		coders[i]->flags = flags;
-		i++;
-	}
-}
-
 int	main(int argc, char *argv[])
 {
 	t_flags		*flags;
 	int			i;
 	t_dongle	**dongles;
 	t_coder		**coders;
+	/*struct rlimit lim;
+
+	 lim.rlim_cur = 100 * 1024;
+    lim.rlim_max = 100 * 1024;
+
+	if (setrlimit(RLIMIT_AS, &lim) != 0) {
+		printf("error inicio\n");
+        perror("setrlimit");
+        return 1;
+    } */
 
 	flags = (t_flags *)ft_calloc(sizeof(t_flags), 1);
-	pthread_mutex_init(&flags->print_mutex, NULL);
-	pthread_mutex_init(&flags->dead_mutex, NULL);
+	if (!flags)
+		exit(1);
+	if (pthread_mutex_init(&flags->print_mutex, NULL) != 0)
+		return (free(flags), 1);
+	printf("here\n");
+	if (pthread_mutex_init(&flags->dead_mutex, NULL) != 0)
+		return (pthread_mutex_destroy(&flags->print_mutex), free(flags), 1);
 	if (argc != 9)
 		return (printf("Incorrect number of parameters\n"), free(flags), 1);
 	i = 1;
@@ -121,11 +75,17 @@ int	main(int argc, char *argv[])
 			return ((printf("Incorrect inputs\n"), free(flags), 1));
 		i++;
 	}
+	printf("here\n");
 	flags->start_time = calculate_time(0);
 	dongles = (t_dongle **)ft_calloc(sizeof(t_dongle *),
 			flags->number_of_coders);
+	if (!dongles)
+		return (free_flags(flags), 1);
 	coders = (t_coder **)ft_calloc(sizeof(t_coder *), flags->number_of_coders);
-	create_cods_and_dongs(dongles, coders, flags);
+	if (!dongles)
+		return (free_flags(flags), free(dongles), 1);
+	if (create_cods_and_dongs(dongles, coders, flags))
+		return (ft_free_everything(dongles, coders, flags), 1);
 	initialize_threads(coders, flags);
-	return (ft_free_cods_and_dongs(dongles, coders, flags), 0);
+	return (ft_free_everything(dongles, coders, flags), 0);
 }

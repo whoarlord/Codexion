@@ -6,7 +6,7 @@
 /*   By: iarrien- <iarrien-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/25 16:17:00 by iarrien-          #+#    #+#             */
-/*   Updated: 2026/07/16 18:00:45 by iarrien-         ###   ########.fr       */
+/*   Updated: 2026/07/21 17:06:45 by iarrien-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,21 +19,27 @@ void	print_action(int number, long long start_time, char *src)
 
 int	take_and_compile(t_coder *coder)
 {
+	if (check_dead(coder))
+		return (pthread_mutex_unlock(&coder->right->mutex),
+			pthread_mutex_unlock(&coder->flags->print_mutex),
+			update_coders_queue(coder), 1);
 	pthread_mutex_lock(&coder->flags->print_mutex);
 	pthread_mutex_lock(&coder->right->mutex);
+	coder->last_compile = calculate_time(coder->flags->start_time);
 	print_action(coder->number, coder->flags->start_time, "has taken a dongle");
 	pthread_mutex_lock(&coder->left->mutex);
 	print_action(coder->number, coder->flags->start_time, "has taken a dongle");
 	coder->last_compile = calculate_time(coder->flags->start_time);
 	print_action(coder->number, coder->flags->start_time, "is compiling");
 	pthread_mutex_unlock(&coder->flags->print_mutex);
-	if (check_dead(coder))
-		return (pthread_mutex_unlock(&coder->right->mutex),
-			pthread_mutex_unlock(&coder->left->mutex),
-			update_coders_queue(coder), 1);
 	coder->next_event_time = calculate_time(coder->flags->start_time) + (long long) (coder->flags->time_to_compile);
-	while (coder->next_event_time > calculate_time(coder->flags->start_time))
-		usleep(100);
+	while (coder->next_event_time > calculate_time(coder->flags->start_time)) {
+		if (check_dead(coder))
+			return (pthread_mutex_unlock(&coder->right->mutex),
+				pthread_mutex_unlock(&coder->left->mutex),
+				update_coders_queue(coder), 1);
+				usleep(100);
+	}
 	coder->right->last_use = calculate_time(coder->flags->start_time);
 	coder->left->last_use = calculate_time(coder->flags->start_time);
 	coder->compile_count++;

@@ -6,7 +6,7 @@
 /*   By: iarrien- <iarrien-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/26 14:27:01 by iarrien-          #+#    #+#             */
-/*   Updated: 2026/07/15 16:58:42 by iarrien-         ###   ########.fr       */
+/*   Updated: 2026/07/22 17:11:13 by iarrien-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,8 @@ void	update_queue_fifo(t_coder *coder, t_queue *queue)
 	int			i;
 
 	i = 0;
-	while (i < 2)
+	printf("i: %d, %d, %d", i, coder->number, queue->is_busy);
+	/* while (i < 2)
 	{
 		if (queue->coders[i] == 0)
 		{
@@ -26,7 +27,7 @@ void	update_queue_fifo(t_coder *coder, t_queue *queue)
 			break ;
 		}
 		i++;
-	}
+	} */
 }
 
 
@@ -34,7 +35,7 @@ void	update_queue_fifo(t_coder *coder, t_queue *queue)
 // dongles means that the dongle is ready to use
 int	fifo_queue(t_coder *coder)
 {
-	t_queue	*right_queue;
+	/* t_queue	*right_queue;
 	t_queue	*left_queue;
 
 	right_queue = coder->right->queue;
@@ -59,6 +60,7 @@ int	fifo_queue(t_coder *coder)
 	}
 	wait_till_cooldown(coder);
 	if (check_dead(coder))
-		return (1);
+		return (1); */
+	printf("coder: %d", coder->number);
 	return (0);
 }

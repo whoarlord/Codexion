@@ -6,7 +6,7 @@
 /*   By: iarrien- <iarrien-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/24 16:02:53 by iarrien-          #+#    #+#             */
-/*   Updated: 2026/07/16 17:57:10 by iarrien-         ###   ########.fr       */
+/*   Updated: 2026/07/22 17:06:21 by iarrien-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,8 +29,6 @@ typedef struct s_queue
 	int				coders[2];
 	int				edf_priority_array[2];
 	int				is_busy;
-	pthread_mutex_t	mutex;
-	pthread_cond_t	cond;
 }					t_queue;
 
 typedef struct s_flags
@@ -53,6 +51,9 @@ typedef struct s_dongle
 {
 	t_queue			*queue;
 	pthread_mutex_t	mutex;
+	pthread_cond_t	cond;
+	int				mutex_ready;
+	int				cond_ready;
 	int				id;
 	long long		last_use;
 }					t_dongle;
@@ -70,6 +71,14 @@ typedef struct s_coder
 }					t_coder;
 
 typedef int	(*t_functions) (t_coder *coder);
+
+int	create_queue(t_dongle *dongle, int number_of_coders);
+int	init_dongle(t_dongle **dongles, int i, int number_of_coders);
+void	init_coder(t_coder **coders, t_dongle **dongles, int i, t_flags *flags);
+int	create_cods_and_dongs(t_dongle **dongles, t_coder **coders, t_flags *flags);
+void	free_flags(t_flags *flags);
+void	ft_free_everything(t_dongle **dongles, t_coder **coders, t_flags *flags);
+
 
 void				*coders_loop(void *coder);
 void				initialize_threads(t_coder **coders, t_flags *flags);

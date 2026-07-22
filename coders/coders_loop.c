@@ -6,7 +6,7 @@
 /*   By: iarrien- <iarrien-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/25 12:21:58 by iarrien-          #+#    #+#             */
-/*   Updated: 2026/07/15 17:16:03 by iarrien-         ###   ########.fr       */
+/*   Updated: 2026/07/22 17:07:28 by iarrien-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,8 +117,8 @@ void	initialize_threads(t_coder **coders, t_flags *flags)
 	i = 0;
 	while (i < flags->number_of_coders)
 	{
-		pthread_cond_broadcast(&coders[i]->left->queue->cond);
-		pthread_cond_broadcast(&coders[i]->right->queue->cond);
+		pthread_cond_broadcast(&coders[i]->left->cond);
+		pthread_cond_broadcast(&coders[i]->right->cond);
 		pthread_join(coders[i]->thread, NULL);
 		i++;
 	}
