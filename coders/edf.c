@@ -6,7 +6,7 @@
 /*   By: iarrien- <iarrien-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/01 11:02:20 by iarrien-          #+#    #+#             */
-/*   Updated: 2026/07/22 17:15:38 by iarrien-         ###   ########.fr       */
+/*   Updated: 2026/07/23 17:22:20 by iarrien-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,18 +32,28 @@ void	update_queue_edf(t_coder *coder, t_dongle *dongle)
 			queue->edf_priority_array[i] = burnout;
 			pthread_cond_signal(&dongle->cond);
 			break ;
+		} else if (queue->edf_priority_array[i] == burnout && queue->coders[i] > coder->number && queue->is_busy == 0) {
+			if (queue->edf_priority_array[i] > burnout)
+				shift_right(queue);
+			queue->coders[i] = coder->number;
+			queue->edf_priority_array[i] = burnout;
+			pthread_cond_signal(&dongle->cond);
+			break ;
 		}
 		i++;
 	}
 }
 
-void	lock(t_coder *coder, t_dongle *dongle)
+static void	lock(t_coder *coder, t_dongle *dongle)
 {
 	pthread_mutex_lock(&dongle->mutex);
 	update_queue_edf(coder, dongle);
 	while (dongle->queue->coders[0] != coder->number) {
+		if (check_dead(coder))
+			break ;
 		pthread_cond_wait(&dongle->cond, &dongle->mutex);
 	}
+	dongle->queue->is_busy = 1;
 	pthread_mutex_unlock(&dongle->mutex);
 }
 
@@ -75,8 +85,6 @@ int	edf_queue(t_coder *coder)
 		if (check_dead(coder))
 			return (pthread_cond_broadcast(&second->cond), 1);
 	}
-	first->queue->is_busy = 1;
-	second->queue->is_busy = 1;
 	wait_till_cooldown(coder);
 	if (check_dead(coder))
 		return (1);

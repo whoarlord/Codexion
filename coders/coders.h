@@ -6,7 +6,7 @@
 /*   By: iarrien- <iarrien-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/24 16:02:53 by iarrien-          #+#    #+#             */
-/*   Updated: 2026/07/22 17:06:21 by iarrien-         ###   ########.fr       */
+/*   Updated: 2026/07/22 17:35:09 by iarrien-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,7 +94,6 @@ void				wait_till_cooldown(t_coder *coder);
 int					check_dead(t_coder *coder);
 void				update_dead(t_flags *flags);
 
-int					fifo_queue(t_coder *coder);
 int					check_before_coders(int *coders,
 						int *free_dongles, t_coder *coder);
 int					check_coder_index(int *coders,
@@ -105,4 +104,5 @@ void				shift_left(t_queue *queue);
 void				shift_right(t_queue *queue);
 
 int					edf_queue(t_coder *coder);
+int					fifo_queue(t_coder *coder);
 #endif
