@@ -6,7 +6,7 @@
 /*   By: iarrien- <iarrien-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/25 12:21:58 by iarrien-          #+#    #+#             */
-/*   Updated: 2026/07/22 17:07:28 by iarrien-         ###   ########.fr       */
+/*   Updated: 2026/08/07 17:04:19 by iarrien-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,19 +85,18 @@ void	*coders_loop(void *coder_pointer)
 	int			i;
 
 	coder = (t_coder *)coder_pointer;
-	functions[0] = fifo_queue;
-	if (coder->flags->scheduler == edf)
-		functions[0] = edf_queue;
+	functions[0] = send_request;
 	functions[1] = take_and_compile;
 	functions[2] = debug;
 	functions[3] = refactor;
 	i = 0;
-	while (!check_dead(coder))
+	while (!check_dead(coder->flags))
 	{
 		if (functions[i % 4](coder))
 			break ;
 		i++;
 	}
+	printf("coder: %d, out\n", coder->number);
 	return (NULL);
 }
 
@@ -105,9 +104,11 @@ void	initialize_threads(t_coder **coders, t_flags *flags)
 {
 	int			i;
 	pthread_t	monitor;
+	pthread_t	scheduler;
 
 	i = 0;
 	pthread_create(&monitor, NULL, monitor_loop, coders);
+	pthread_create(&scheduler, NULL, scheduler_loop, flags);
 	while (i < flags->number_of_coders)
 	{
 		pthread_create(&coders[i]->thread, NULL, coders_loop, coders[i]);
@@ -117,8 +118,7 @@ void	initialize_threads(t_coder **coders, t_flags *flags)
 	i = 0;
 	while (i < flags->number_of_coders)
 	{
-		pthread_cond_broadcast(&coders[i]->left->cond);
-		pthread_cond_broadcast(&coders[i]->right->cond);
+		pthread_cond_broadcast(&flags->heap->cond);
 		pthread_join(coders[i]->thread, NULL);
 		i++;
 	}

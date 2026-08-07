@@ -6,7 +6,7 @@
 /*   By: iarrien- <iarrien-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/26 13:39:41 by iarrien-          #+#    #+#             */
-/*   Updated: 2026/07/23 15:56:11 by iarrien-         ###   ########.fr       */
+/*   Updated: 2026/08/06 15:07:32 by iarrien-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,13 +46,13 @@ void	update_dead(t_flags *flags)
 	pthread_mutex_unlock(&flags->dead_mutex);
 }
 
-int	check_dead(t_coder *coder)
+int	check_dead(t_flags *flags)
 {
 	int	result;
 
-	pthread_mutex_lock(&coder->flags->dead_mutex);
-	result = coder->flags->is_dead;
-	pthread_mutex_unlock(&coder->flags->dead_mutex);
+	pthread_mutex_lock(&flags->dead_mutex);
+	result = flags->is_dead;
+	pthread_mutex_unlock(&flags->dead_mutex);
 	return (result);
 }
 

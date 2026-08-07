@@ -6,7 +6,7 @@
 /*   By: iarrien- <iarrien-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/24 16:02:53 by iarrien-          #+#    #+#             */
-/*   Updated: 2026/07/22 17:35:09 by iarrien-         ###   ########.fr       */
+/*   Updated: 2026/08/07 16:11:47 by iarrien-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,17 +19,35 @@
 # include <sys/time.h>
 # include <unistd.h>
 
+typedef struct s_coder	t_coder;
+
 typedef enum e_scheduler
 {
 	fifo,
 	edf
 }					t_scheduler;
-typedef struct s_queue
+
+typedef struct s_request
 {
-	int				coders[2];
-	int				edf_priority_array[2];
-	int				is_busy;
-}					t_queue;
+	t_coder		*coder;
+	long long 	arrival;
+	long long	time_to_burnout;
+}				t_request;
+
+typedef struct s_heap
+{
+	t_request		*queue;
+	t_request		*staying;
+	t_request		*going_out;
+	int				size;
+	int				length;
+	pthread_mutex_t	mutex;
+	int				mutex_ready;
+	pthread_cond_t	cond;
+	int				cond_ready;
+	int				last_arrival;
+	int				stop_popping;
+}					t_heap;
 
 typedef struct s_flags
 {
@@ -45,17 +63,16 @@ typedef struct s_flags
 	pthread_mutex_t	print_mutex;
 	pthread_mutex_t	dead_mutex;
 	int				is_dead;
+	t_heap			*heap;
 }					t_flags;
 
 typedef struct s_dongle
 {
-	t_queue			*queue;
-	pthread_mutex_t	mutex;
-	pthread_cond_t	cond;
-	int				mutex_ready;
-	int				cond_ready;
 	int				id;
 	long long		last_use;
+	int				is_busy;
+	pthread_mutex_t	mutex;
+	int				mutex_ready;
 }					t_dongle;
 
 typedef struct s_coder
@@ -68,12 +85,11 @@ typedef struct s_coder
 	t_dongle		*right;
 	pthread_t		thread;
 	t_flags			*flags;
+	int				go_out;
 }					t_coder;
 
 typedef int	(*t_functions) (t_coder *coder);
 
-int	create_queue(t_dongle *dongle, int number_of_coders);
-int	init_dongle(t_dongle **dongles, int i, int number_of_coders);
 void	init_coder(t_coder **coders, t_dongle **dongles, int i, t_flags *flags);
 int	create_cods_and_dongs(t_dongle **dongles, t_coder **coders, t_flags *flags);
 void	free_flags(t_flags *flags);
@@ -88,21 +104,18 @@ int					debug(t_coder *coder);
 int					refactor(t_coder *coder);
 
 long long			calculate_time(long long time_to_calc);
-void				finish_cond_loop(t_coder *coder);
 void				*ft_calloc(size_t nmemb, size_t size);
 void				wait_till_cooldown(t_coder *coder);
-int					check_dead(t_coder *coder);
+int					check_dead(t_flags *flags);
 void				update_dead(t_flags *flags);
 
-int					check_before_coders(int *coders,
-						int *free_dongles, t_coder *coder);
-int					check_coder_index(int *coders,
-						int actual_coder_number, int size);
-void				free_coder_from_queue(t_coder *coder);
-void				update_coders_queue(t_coder *coder);
-void				shift_left(t_queue *queue);
-void				shift_right(t_queue *queue);
-
-int					edf_queue(t_coder *coder);
-int					fifo_queue(t_coder *coder);
+void		heapify_down(t_flags *flags);
+void		heapify_up(t_flags *flags);
+int		create_heap(t_flags *flags);
+void		heap_push(t_flags *flags, t_coder	*coder);
+t_request	heap_pop(t_flags *flags);
+int		send_request(t_coder *coder);
+void	*scheduler_loop(void *flags);
+void	print_queue(t_heap *heap);
+void	clear_heap(t_flags *flags);
 #endif

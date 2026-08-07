@@ -6,7 +6,7 @@
 /*   By: iarrien- <iarrien-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/24 16:02:07 by iarrien-          #+#    #+#             */
-/*   Updated: 2026/07/22 17:20:28 by iarrien-         ###   ########.fr       */
+/*   Updated: 2026/08/06 15:21:42 by iarrien-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,6 @@ int	main(int argc, char *argv[])
 		exit(1);
 	if (pthread_mutex_init(&flags->print_mutex, NULL) != 0)
 		return (free(flags), 1);
-	printf("here\n");
 	if (pthread_mutex_init(&flags->dead_mutex, NULL) != 0)
 		return (pthread_mutex_destroy(&flags->print_mutex), free(flags), 1);
 	if (argc != 9)
@@ -75,7 +74,6 @@ int	main(int argc, char *argv[])
 			return ((printf("Incorrect inputs\n"), free(flags), 1));
 		i++;
 	}
-	printf("here\n");
 	flags->start_time = calculate_time(0);
 	dongles = (t_dongle **)ft_calloc(sizeof(t_dongle *),
 			flags->number_of_coders);
@@ -85,6 +83,8 @@ int	main(int argc, char *argv[])
 	if (!dongles)
 		return (free_flags(flags), free(dongles), 1);
 	if (create_cods_and_dongs(dongles, coders, flags))
+		return (ft_free_everything(dongles, coders, flags), 1);
+	if (create_heap(flags))
 		return (ft_free_everything(dongles, coders, flags), 1);
 	initialize_threads(coders, flags);
 	return (ft_free_everything(dongles, coders, flags), 0);
