@@ -6,7 +6,7 @@
 /*   By: iarrien- <iarrien-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/04 17:12:33 by iarrien-          #+#    #+#             */
-/*   Updated: 2026/08/10 17:52:37 by iarrien-         ###   ########.fr       */
+/*   Updated: 2026/08/10 17:53:47 by iarrien-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,8 +66,8 @@ void	popping_out_everything(t_flags *flags, int *going_out_index,
 	while (heap->size > 0)
 	{
 		request = heap_pop(flags);
-		//pthread_mutex_lock(&request.coder->right->mutex);
-		//pthread_mutex_lock(&request.coder->left->mutex);
+		pthread_mutex_lock(&request.coder->right->mutex);
+		pthread_mutex_lock(&request.coder->left->mutex);
 		if (request.coder->right->is_busy || request.coder->left->is_busy)
 		{
 			heap->staying[*staying_index] = request;
@@ -80,8 +80,8 @@ void	popping_out_everything(t_flags *flags, int *going_out_index,
 			request.coder->right->is_busy = 1;
 			*going_out_index = *going_out_index + 1;
 		}
-		//thread_mutex_unlock(&request.coder->right->mutex);
-		//pthread_mutex_unlock(&request.coder->left->mutex);
+		pthread_mutex_unlock(&request.coder->right->mutex);
+		pthread_mutex_unlock(&request.coder->left->mutex);
 	}
 }
 
