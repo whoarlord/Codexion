@@ -6,7 +6,7 @@
 /*   By: iarrien- <iarrien-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/24 16:02:07 by iarrien-          #+#    #+#             */
-/*   Updated: 2026/08/06 15:21:42 by iarrien-         ###   ########.fr       */
+/*   Updated: 2026/08/10 15:52:26 by iarrien-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,22 +41,30 @@ int	fill_flags(int i, char *argv[], t_flags *flags)
 	return (0);
 }
 
+static int	initialize_simulation(t_flags *flags)
+{
+	t_dongle	**dongles;
+	t_coder		**coders;
+
+	dongles = (t_dongle **)ft_calloc(sizeof(t_dongle *),
+			flags->number_of_coders);
+	if (!dongles)
+		return (free_flags(flags), 1);
+	coders = (t_coder **)ft_calloc(sizeof(t_coder *), flags->number_of_coders);
+	if (!dongles)
+		return (free_flags(flags), free(dongles), 1);
+	if (create_cods_and_dongs(dongles, coders, flags))
+		return (ft_free_everything(dongles, coders, flags), 1);
+	if (create_heap(flags))
+		return (ft_free_everything(dongles, coders, flags), 1);
+	initialize_threads(coders, flags);
+	return (ft_free_everything(dongles, coders, flags), 0);
+}
+
 int	main(int argc, char *argv[])
 {
 	t_flags		*flags;
 	int			i;
-	t_dongle	**dongles;
-	t_coder		**coders;
-	/*struct rlimit lim;
-
-	 lim.rlim_cur = 100 * 1024;
-    lim.rlim_max = 100 * 1024;
-
-	if (setrlimit(RLIMIT_AS, &lim) != 0) {
-		printf("error inicio\n");
-        perror("setrlimit");
-        return 1;
-    } */
 
 	flags = (t_flags *)ft_calloc(sizeof(t_flags), 1);
 	if (!flags)
@@ -75,17 +83,5 @@ int	main(int argc, char *argv[])
 		i++;
 	}
 	flags->start_time = calculate_time(0);
-	dongles = (t_dongle **)ft_calloc(sizeof(t_dongle *),
-			flags->number_of_coders);
-	if (!dongles)
-		return (free_flags(flags), 1);
-	coders = (t_coder **)ft_calloc(sizeof(t_coder *), flags->number_of_coders);
-	if (!dongles)
-		return (free_flags(flags), free(dongles), 1);
-	if (create_cods_and_dongs(dongles, coders, flags))
-		return (ft_free_everything(dongles, coders, flags), 1);
-	if (create_heap(flags))
-		return (ft_free_everything(dongles, coders, flags), 1);
-	initialize_threads(coders, flags);
-	return (ft_free_everything(dongles, coders, flags), 0);
+	return (initialize_simulation(flags));
 }

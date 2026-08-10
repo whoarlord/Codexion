@@ -6,7 +6,7 @@
 /*   By: iarrien- <iarrien-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/24 16:02:53 by iarrien-          #+#    #+#             */
-/*   Updated: 2026/08/07 16:11:47 by iarrien-         ###   ########.fr       */
+/*   Updated: 2026/08/10 15:43:09 by iarrien-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ typedef enum e_scheduler
 typedef struct s_request
 {
 	t_coder		*coder;
-	long long 	arrival;
+	long long	arrival;
 	long long	time_to_burnout;
 }				t_request;
 
@@ -88,34 +88,37 @@ typedef struct s_coder
 	int				go_out;
 }					t_coder;
 
-typedef int	(*t_functions) (t_coder *coder);
+typedef int				(*t_functions)(t_coder *coder);
 
-void	init_coder(t_coder **coders, t_dongle **dongles, int i, t_flags *flags);
-int	create_cods_and_dongs(t_dongle **dongles, t_coder **coders, t_flags *flags);
-void	free_flags(t_flags *flags);
-void	ft_free_everything(t_dongle **dongles, t_coder **coders, t_flags *flags);
+void		init_coder(t_coder **coders, t_dongle **dongles, int i,
+				t_flags *flags);
+int			create_cods_and_dongs(t_dongle **dongles, t_coder **coders,
+				t_flags *flags);
+void		free_flags(t_flags *flags);
+void		ft_free_everything(t_dongle **dongles, t_coder **coders,
+				t_flags *flags);
 
+void		*coders_loop(void *coder);
+void		initialize_threads(t_coder **coders, t_flags *flags);
+void		print_action(int number, long long start_time, char *src);
+int			take_and_compile(t_coder *coder);
+int			debug(t_coder *coder);
+int			refactor(t_coder *coder);
 
-void				*coders_loop(void *coder);
-void				initialize_threads(t_coder **coders, t_flags *flags);
-void				print_action(int number, long long start_time, char *src);
-int					take_and_compile(t_coder *coder);
-int					debug(t_coder *coder);
-int					refactor(t_coder *coder);
-
-long long			calculate_time(long long time_to_calc);
-void				*ft_calloc(size_t nmemb, size_t size);
-void				wait_till_cooldown(t_coder *coder);
-int					check_dead(t_flags *flags);
-void				update_dead(t_flags *flags);
+long long	calculate_time(long long time_to_calc);
+void		*ft_calloc(size_t nmemb, size_t size);
+void		wait_till_cooldown(t_coder *coder);
+int			check_dead(t_flags *flags);
+void		update_dead(t_flags *flags);
 
 void		heapify_down(t_flags *flags);
 void		heapify_up(t_flags *flags);
-int		create_heap(t_flags *flags);
-void		heap_push(t_flags *flags, t_coder	*coder);
+int			create_heap(t_flags *flags);
+void		heap_push(t_flags *flags, t_coder *coder);
 t_request	heap_pop(t_flags *flags);
-int		send_request(t_coder *coder);
-void	*scheduler_loop(void *flags);
-void	print_queue(t_heap *heap);
-void	clear_heap(t_flags *flags);
+int			send_request(t_coder *coder);
+void		*scheduler_loop(void *flags);
+void		print_queue(t_heap *heap);
+void		clear_heap(t_flags *flags);
+
 #endif

@@ -6,7 +6,7 @@
 /*   By: iarrien- <iarrien-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/22 16:52:44 by iarrien-          #+#    #+#             */
-/*   Updated: 2026/08/07 15:26:19 by iarrien-         ###   ########.fr       */
+/*   Updated: 2026/08/10 15:52:26 by iarrien-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,17 +35,21 @@ void	init_coder(t_coder **coders, t_dongle **dongles, int i, t_flags *flags)
 	coders[i]->flags = flags;
 }
 
-int	create_heap(t_flags *flags) {
+int	create_heap(t_flags *flags)
+{
 	flags->heap = (t_heap *) ft_calloc(1, sizeof(t_heap));
 	if (!flags->heap)
 		return (1);
-	flags->heap->queue = (t_request *) ft_calloc(flags->number_of_coders, sizeof(t_request));
+	flags->heap->queue = (t_request *) ft_calloc(flags->number_of_coders,
+			sizeof(t_request));
 	if (!flags->heap->queue)
 		return (1);
-	flags->heap->going_out = (t_request *) ft_calloc(flags->number_of_coders, sizeof(t_request));
+	flags->heap->going_out = (t_request *) ft_calloc(flags->number_of_coders,
+			sizeof(t_request));
 	if (!flags->heap->going_out)
 		return (1);
-	flags->heap->staying = (t_request *) ft_calloc(flags->number_of_coders, sizeof(t_request));
+	flags->heap->staying = (t_request *) ft_calloc(flags->number_of_coders,
+			sizeof(t_request));
 	if (!flags->heap->staying)
 		return (1);
 	flags->heap->length = flags->number_of_coders;

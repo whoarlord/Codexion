@@ -6,12 +6,11 @@
 /*   By: iarrien- <iarrien-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/25 12:21:58 by iarrien-          #+#    #+#             */
-/*   Updated: 2026/08/07 17:04:19 by iarrien-         ###   ########.fr       */
+/*   Updated: 2026/08/10 15:52:27 by iarrien-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "coders.h"
-
 
 int	monitor_verifications(t_coder **coders, int get_out, int *i)
 {
@@ -36,7 +35,6 @@ int	monitor_verifications(t_coder **coders, int get_out, int *i)
 	return (get_out);
 }
 
-
 static void	finish_state(t_coder *coder, char *str)
 {
 	t_flags	*flags;
@@ -50,7 +48,6 @@ static void	finish_state(t_coder *coder, char *str)
 		printf("%lld %s\n", calculate_time(flags->start_time), str);
 	pthread_mutex_unlock(&flags->print_mutex);
 }
-
 
 void	*monitor_loop(void *coders_pointer)
 {
@@ -96,7 +93,6 @@ void	*coders_loop(void *coder_pointer)
 			break ;
 		i++;
 	}
-	printf("coder: %d, out\n", coder->number);
 	return (NULL);
 }
 
@@ -122,4 +118,6 @@ void	initialize_threads(t_coder **coders, t_flags *flags)
 		pthread_join(coders[i]->thread, NULL);
 		i++;
 	}
+	pthread_cond_broadcast(&flags->heap->cond);
+	pthread_join(scheduler, NULL);
 }

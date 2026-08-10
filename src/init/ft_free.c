@@ -6,7 +6,7 @@
 /*   By: iarrien- <iarrien-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/22 16:51:49 by iarrien-          #+#    #+#             */
-/*   Updated: 2026/08/07 17:25:54 by iarrien-         ###   ########.fr       */
+/*   Updated: 2026/08/10 15:52:26 by iarrien-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,11 +19,28 @@ void	free_flags(t_flags *flags)
 	free(flags);
 }
 
+static void	free_heap(t_heap *heap)
+{
+	if (heap)
+	{
+		if (heap->queue)
+			free(heap->queue);
+		if (heap->going_out)
+			free(heap->going_out);
+		if (heap->staying)
+			free(heap->staying);
+		if (heap->mutex_ready)
+			pthread_mutex_destroy(&heap->mutex);
+		if (heap->cond_ready)
+			pthread_cond_destroy(&heap->cond);
+		free(heap);
+	}
+}
+
 void	ft_free_everything(t_dongle **dongles, t_coder **coders, t_flags *flags)
 {
 	int	i;
 	int	count;
-	printf("freeing everything\n");
 
 	i = -1;
 	count = flags->number_of_coders;
@@ -40,19 +57,7 @@ void	ft_free_everything(t_dongle **dongles, t_coder **coders, t_flags *flags)
 	while (coders && ++i < count)
 		free(coders[i]);
 	free(coders);
-	if (flags->heap) {
-		if (flags->heap->queue)
-			free(flags->heap->queue);
-		if (flags->heap->going_out)
-			free(flags->heap->going_out);
-		if (flags->heap->staying)
-			free(flags->heap->staying);
-		if (flags->heap->mutex_ready)
-			pthread_mutex_destroy(&flags->heap->mutex);
-		if (flags->heap->cond_ready)
-			pthread_cond_destroy(&flags->heap->cond);
-		free(flags->heap);
-	}
+	free_heap(flags->heap);
 	pthread_mutex_destroy(&flags->print_mutex);
 	pthread_mutex_destroy(&flags->dead_mutex);
 	free(flags);
