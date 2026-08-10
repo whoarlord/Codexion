@@ -6,7 +6,7 @@
 /*   By: iarrien- <iarrien-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/25 12:21:58 by iarrien-          #+#    #+#             */
-/*   Updated: 2026/08/10 15:52:27 by iarrien-         ###   ########.fr       */
+/*   Updated: 2026/08/10 17:43:40 by iarrien-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,25 +99,25 @@ void	*coders_loop(void *coder_pointer)
 void	initialize_threads(t_coder **coders, t_flags *flags)
 {
 	int			i;
+	int			created;
 	pthread_t	monitor;
 	pthread_t	scheduler;
 
 	i = 0;
-	pthread_create(&monitor, NULL, monitor_loop, coders);
-	pthread_create(&scheduler, NULL, scheduler_loop, flags);
-	while (i < flags->number_of_coders)
-	{
-		pthread_create(&coders[i]->thread, NULL, coders_loop, coders[i]);
-		i++;
-	}
-	pthread_join(monitor, NULL);
+	created = 0;
+	if (pthread_create(&monitor, NULL, monitor_loop, coders) != 0)
+		update_dead(flags);
+	else
+		created++;
+	create_sched_cods(&created, flags, &scheduler, coders);
+	if (created > 0)
+		pthread_join(monitor, NULL);
 	i = 0;
-	while (i < flags->number_of_coders)
+	if (created > 1)
+		pthread_join(scheduler, NULL);
+	while (i < created - 2)
 	{
-		pthread_cond_broadcast(&flags->heap->cond);
 		pthread_join(coders[i]->thread, NULL);
 		i++;
 	}
-	pthread_cond_broadcast(&flags->heap->cond);
-	pthread_join(scheduler, NULL);
 }

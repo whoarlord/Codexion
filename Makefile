@@ -6,7 +6,7 @@
 #    By: iarrien- <iarrien-@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/03/24 15:58:01 by iarrien-          #+#    #+#              #
-#    Updated: 2026/08/10 15:52:59 by iarrien-         ###   ########.fr        #
+#    Updated: 2026/08/10 17:41:59 by iarrien-         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,7 +16,7 @@ CFLAGS=-Wall -Werror -Wextra -pthread -Isrc
 
 ODIR=obj
 
-SRC=main.c coders/coders_loop.c coders/coders_actions.c coders/coders_utils.c init/ft_free.c init/ft_init.c scheduler/heap_utils.c scheduler/heapify_utils.c scheduler/scheduler.c
+SRC=main.c coders/coders_loop.c coders/coders_actions.c coders/coders_utils.c coders/check_simulation.c init/ft_free.c init/ft_init.c scheduler/heap_utils.c scheduler/heapify_utils.c scheduler/scheduler.c
 VPATH=src
 HEADER=coders.h
 OBJ=$(addprefix $(ODIR)/,$(SRC:.c=.o))

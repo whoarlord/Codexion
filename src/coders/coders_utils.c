@@ -6,7 +6,7 @@
 /*   By: iarrien- <iarrien-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/26 13:39:41 by iarrien-          #+#    #+#             */
-/*   Updated: 2026/08/10 15:52:26 by iarrien-         ###   ########.fr       */
+/*   Updated: 2026/08/10 16:52:47 by iarrien-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,8 +64,12 @@ void	wait_till_cooldown(t_coder *coder)
 		coder->right->last_use -= coder->flags->dongle_cooldown;
 	while (coder->left->last_use
 		+ coder->flags->dongle_cooldown
-		>= calculate_time(coder->flags->start_time));
+		>= calculate_time(coder->flags->start_time)
+		&& !check_dead(coder->flags))
+		usleep(100);
 	while (coder->right->last_use
 		+ coder->flags->dongle_cooldown
-		>= calculate_time(coder->flags->start_time));
+		>= calculate_time(coder->flags->start_time)
+		&& !check_dead(coder->flags))
+		usleep(100);
 }
