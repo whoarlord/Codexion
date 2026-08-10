@@ -6,7 +6,7 @@
 /*   By: iarrien- <iarrien-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/04 16:05:08 by iarrien-          #+#    #+#             */
-/*   Updated: 2026/08/10 15:52:26 by iarrien-         ###   ########.fr       */
+/*   Updated: 2026/08/10 16:22:42 by iarrien-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,8 +57,9 @@ void	heapify_up(t_flags *flags)
 		{
 			swap_heap(heap, (i - 1) / 2, i);
 			i = (i - 1) / 2;
-			continue ;
 		}
+		else
+			break ;
 	}
 }
 

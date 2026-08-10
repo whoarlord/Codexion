@@ -6,7 +6,7 @@
 /*   By: iarrien- <iarrien-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/24 16:02:53 by iarrien-          #+#    #+#             */
-/*   Updated: 2026/08/10 15:43:09 by iarrien-         ###   ########.fr       */
+/*   Updated: 2026/08/10 16:25:58 by iarrien-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,7 +118,6 @@ void		heap_push(t_flags *flags, t_coder *coder);
 t_request	heap_pop(t_flags *flags);
 int			send_request(t_coder *coder);
 void		*scheduler_loop(void *flags);
-void		print_queue(t_heap *heap);
 void		clear_heap(t_flags *flags);
 
 #endif

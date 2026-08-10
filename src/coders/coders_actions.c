@@ -6,7 +6,7 @@
 /*   By: iarrien- <iarrien-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/25 16:17:00 by iarrien-          #+#    #+#             */
-/*   Updated: 2026/08/10 15:52:26 by iarrien-         ###   ########.fr       */
+/*   Updated: 2026/08/10 16:16:35 by iarrien-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,8 +38,7 @@ static void	wait_until_compile(t_coder *coder)
 int	take_and_compile(t_coder *coder)
 {
 	if (check_dead(coder->flags))
-		return (pthread_mutex_unlock(&coder->right->mutex),
-			pthread_mutex_unlock(&coder->flags->print_mutex), 1);
+		return (1);
 	wait_till_cooldown(coder);
 	pthread_mutex_lock(&coder->flags->print_mutex);
 	pthread_mutex_lock(&coder->right->mutex);
