@@ -6,7 +6,7 @@
 /*   By: iarrien- <iarrien-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/05 16:44:17 by iarrien-          #+#    #+#             */
-/*   Updated: 2026/08/10 16:24:36 by iarrien-         ###   ########.fr       */
+/*   Updated: 2026/08/11 15:21:21 by iarrien-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ void	*scheduler_loop(void *flags_pointer)
 		if (check_dead(flags))
 			break ;
 		pthread_mutex_lock(&flags->heap->mutex);
-		if (flags->heap->size > 0)
+		if (flags->heap->size > 0 && flags->heap->length > 1)
 			clear_heap(flags);
 		pthread_mutex_unlock(&flags->heap->mutex);
 		pthread_cond_broadcast(&flags->heap->cond);

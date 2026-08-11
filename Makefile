@@ -6,13 +6,13 @@
 #    By: iarrien- <iarrien-@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/03/24 15:58:01 by iarrien-          #+#    #+#              #
-#    Updated: 2026/08/10 17:41:59 by iarrien-         ###   ########.fr        #
+#    Updated: 2026/08/11 15:20:03 by iarrien-         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME=codexion
 CC=cc
-CFLAGS=-Wall -Werror -Wextra -pthread -Isrc
+CFLAGS=-Wall -Werror -Wextra -pthread -Isrc -g
 
 ODIR=obj
 

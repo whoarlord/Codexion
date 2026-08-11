@@ -55,7 +55,8 @@ Los principales objetivos técnicos del proyecto son:
     ├── coders
     │   ├── coders_actions.c
     │   ├── coders_loop.c
-    │   └── coders_utils.c
+    │   ├── coders_utils.c
+    |   └── check_simulation.c
     ├── init
     │   ├── ft_free.c
     │   └── ft_init.c
@@ -587,63 +588,6 @@ cond_ready
 
 permiten saber qué primitivas llegaron a inicializarse correctamente y evitar destruir primitivas que nunca fueron creadas.
 
-## Limitaciones y mejoras futuras
-
-Durante la revisión del proyecto se han identificado varias áreas que pueden mejorarse:
-
-### 1. Eliminar data races
-
-El acceso a:
-
-```text
-is_busy
-last_use
-last_compile
-compile_count
-```
-
-debería quedar completamente protegido por primitivas de sincronización apropiadas.
-
-### 2. Reducir busy waiting
-
-Los bucles basados en `usleep()` pueden sustituirse parcialmente por mecanismos de espera condicionada o por una planificación del cooldown directamente desde el scheduler.
-
-### 3. Validación estricta de argumentos
-
-Los valores deberían validarse antes de iniciar la simulación:
-
-* números positivos,
-* límites razonables,
-* número mínimo de coders,
-* scheduler válido.
-
-### 4. Comprobación de errores de pthread
-
-Las llamadas a:
-
-```text
-pthread_create()
-pthread_join()
-pthread_mutex_init()
-pthread_mutex_lock()
-pthread_cond_init()
-pthread_cond_wait()
-```
-
-deberían comprobar sus códigos de retorno cuando corresponda.
-
-### 5. Estados explícitos
-
-Variables como:
-
-```c
-int go_out;
-int is_busy;
-int is_dead;
-```
-
-podrían sustituirse por enums o estructuras de estado más explícitas para hacer el protocolo concurrente más fácil de razonar.
-
 ## Recursos
 
 ### POSIX Threads
@@ -689,14 +633,6 @@ El proyecto utiliza dos estrategias clásicas:
 
 EDF es especialmente relevante porque cada coder puede interpretarse como una tarea con un deadline relacionado con su burnout.
 
-### Makefiles
-
-El proyecto utiliza GNU Make para automatizar la compilación y gestión de los objetos.
-
-Referencia:
-
-https://www.gnu.org/software/make/manual/
-
 ### Uso de IA
 
 La inteligencia artificial se utilizó como herramienta de apoyo durante el desarrollo y revisión del proyecto, no como sustituto de la comprensión de la implementación.
@@ -710,12 +646,3 @@ En concreto, se utilizó para:
 * Identificar posibles problemas de sincronización.
 * Sugerir mejoras de organización y legibilidad.
 * Ayudar a estructurar y redactar esta documentación.
-
-La IA no sustituye la validación manual del comportamiento del programa. Las decisiones finales sobre la implementación, sincronización y correcciones deben ser verificadas ejecutando y revisando el código fuente.
-
-## Autor
-
-Proyecto realizado como parte del currículo de **42**.
-
-* **iarrien-**
-* Repositorio: https://github.com/whoarlord/Codexion
